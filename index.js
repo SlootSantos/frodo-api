@@ -7,6 +7,25 @@ const randomToken = require("random-token");
 
 app.use(bodyParser.json());
 app.use(cookieParser());
+// Add headers
+app.use(function (req, res, next) {
+
+  // Website you wish to allow to connect
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+
+  // Request methods you wish to allow
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+  // Request headers you wish to allow
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+  // Set to true if you need the website to include cookies in the requests sent
+  // to the API (e.g. in case you use sessions)
+  res.setHeader('Access-Control-Allow-Credentials', true);
+
+  // Pass to next layer of middleware
+  next();
+});
 
 app.get("/_internal/users", (req, res) => {
   console.log(req.body);
@@ -53,7 +72,7 @@ app.post("/login", (req, res) => {
             if (!err) {
               res
                 .cookie("user", req.body.username, { maxAge: 10800 })
-                .sendStatus(200);
+                .json({token: token})
             }
           }
         );
@@ -85,4 +104,4 @@ function authenticate(req, res, next) {
     next();
   });
 }
-app.listen(3003, () => console.log("starting the server..."));
+app.listen(8080, () => console.log("starting the server..."));
